@@ -1,4 +1,5 @@
 import React from "react";
+import {pageNumber} from "../config/Config";
 import { generateUniqueID } from "web-vitals/dist/modules/lib/generateUniqueID";
 import "./Pagination.css"
 
@@ -9,7 +10,7 @@ export interface PageType {
 
 export const BuildPagination=({getPage,item}:PageType)=>{
     let page =[0]
-    for(let i = 1;i<Math.ceil(item/10);i++){
+    for(let i = 1;i<Math.ceil(item/pageNumber);i++){
         page.push(i)
     }
 
