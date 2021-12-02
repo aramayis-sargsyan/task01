@@ -4,13 +4,19 @@ export interface ChangeProps {
     text: string
 }
 
-export interface asd {
+export interface dataItem {
     name: string,
     surname: string,
     age: string
+    index:number
 }
 
-export function searchData(text: string, searchText: string):{
+export function searchData(text: string, searchText: string,dataItems:{
+    name: string,
+    surname: string,
+    age: string
+    index:number
+}[]):{
     index:number,
     startIndex:number
 }[] {
@@ -19,14 +25,15 @@ export function searchData(text: string, searchText: string):{
         startIndex: number
     }[] = []
     if (text.length > 2) {
-        data().map((el: asd, index) => {
+        console.log(dataItems)
+        dataItems.map((el: dataItem, index) => {
             let count = 0
             // @ts-ignore
             for (let i = 0; i < el[searchText].length; i++) {
                 // @ts-ignore
                 if (el[searchText][i].toLowerCase() === text[count].toLowerCase()) {
                     if (count === text.length - 1) {
-                        indexArr.push({index: index, startIndex: i})
+                        indexArr.push({index: el.index, startIndex: i})
                         break
                     }
                     count++
@@ -37,12 +44,16 @@ export function searchData(text: string, searchText: string):{
             // @ts-ignore
             return el[searchText][0] === text[0]
         })
+        console.log(indexArr)
         return indexArr
 
     } else {
         let res = []
-for (let i = 0;i<data().length;i++){
-    res.push({index: i, startIndex: 0})
+for (let i = 0;i<dataItems.length;i++){
+
+    if(dataItems[i]!==null){
+        res.push({index:dataItems[i].index, startIndex: 0})
+    }
 }
     return res
     }

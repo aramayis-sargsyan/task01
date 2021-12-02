@@ -44,7 +44,7 @@
     position: absolute;
     background-color: #ffffff;
     color: #004400;
-    border-radius:50px 0px 0px 50px;
+    border-radius:50px 0 0 50px ;
     border: none;
     width: 40px;
     height: 40px;
@@ -101,4 +101,36 @@
 
 .del:hover{
     border: 2px solid #004400;
+}
+
+.changeInputContainer{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 10px;
+    margin: 10px;
+    border: 2px solid #004400;
+    height: 50px;
+    margin-top: 30%;
+}
+
+.changeInput{
+    background-color: #00bb00;
+    width: 30%;
+    height: 50px;
+    font-size: 30px;
+    text-align: center;
+    font-weight:1000;
+    color: black;
+}
+
+.changeInputButton{
+    background-color: #ffffff;
+    width: 10%;
+    height: 50px;
+    font-size: 30px;
+    text-align: center;
+    font-weight:1000;
+    color: black;
+    border: 5px solid #004400;
 }

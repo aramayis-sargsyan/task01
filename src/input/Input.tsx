@@ -9,7 +9,7 @@ import "./Input.css"
 
 export const BuildInput=({changeInput,getItemIndexEnter,text}: InputType):JSX.Element=>{
     return (
-        <input onChange={changeInput} onKeyPress={getItemIndexEnter} className={"input"} value={text}/>
+        <input onChange={changeInput} onKeyPress={getItemIndexEnter} className={"input"} value={text}    maxLength={15}  />
 
     )
 }

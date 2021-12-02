@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import BuildInput from "../input/Input";
 import BuildItem from "../items/Item";
 import {data} from "../util/Data";
-import {searchData} from "../util/SearchData";
+import { searchData} from "../util/SearchData";
 import Pagination from "../pagination/Pagination";
 import BuildSelect from "../select/Select";
 import {pageNumber} from "../config/Config";
@@ -15,6 +15,13 @@ export interface items  {
     startIndex:number
 }
 
+export interface dataItem  {
+    name: string,
+    surname: string,
+    age: string
+    index:number
+}
+
 
 
 export default function Container():JSX.Element {
@@ -24,25 +31,42 @@ export default function Container():JSX.Element {
     const [isEdit,setIsEdit] = useState<boolean>(false)
     const [searchName,setSearchName] = useState<string>("name")
     const [isCompleted,setIsCompleted] = useState<boolean>(false)
+    const [isEditable,setIsEditable] = useState<boolean>(false)
+    const [changeIndex,setChangeIndex] = useState<number>(-1)
+    const [dataItems,setDataItems] = useState<dataItem[]>([])
 
 
     useEffect(() => {
-            data().forEach((el,index)=>{
+
+        data().forEach((el,index)=>{
                 setItems((items)=>{
                     return [...items, {index:index,startIndex:-1}]
                 })
             })
     }, []);
 
+    useEffect(() => {
+            data().forEach((el,index)=>{
+                setDataItems((dataItems)=>{
+                    return [...dataItems,{...el,index:index}]
+                })
+            })
+        console.log(dataItems)
+
+    }, []);
+
     function buildAllItems(){
         setItems(()=>{
             return []
         })
-
-        data().forEach((el,index)=>{
+        dataItems.forEach((el,)=>{
             setItems((items)=>{
-                return [...items,{index:index,startIndex:-1}]
-            })
+                return [...items,{index:el.index,startIndex:-1}]
+                })
+        })
+
+        setText(()=>{
+            return ""
         })
     }
 
@@ -50,9 +74,9 @@ export default function Container():JSX.Element {
         setText(()=>{
             return e.target.value
         })
-            let validIndex = searchData(e.target.value, searchName)
+
             setItems(() => {
-                return validIndex
+                return searchData(e.target.value, searchName,dataItems)
             })
             setPagination(()=>{
                 return 0
@@ -61,9 +85,9 @@ export default function Container():JSX.Element {
 
     function getItemIndex() {
         if (text.length > 2) {
-            let validIndex = searchData(text, searchName)
+
             setItems(() => {
-                return validIndex
+                return searchData(text, searchName,dataItems)
             })
             setPagination(()=>{
                 return 0
@@ -74,9 +98,9 @@ export default function Container():JSX.Element {
 
     function getItemIndexEnter(e:any){
         if(text.length>2 && e.key==="Enter"){
-            let validIndex= searchData(text,searchName)
+            searchData(text,searchName,dataItems)
             setItems(()=>{
-                return validIndex
+                return searchData(text,searchName,dataItems)
             })
             setPagination(()=>{
                 return 0
@@ -120,17 +144,107 @@ export default function Container():JSX.Element {
         })
     }
 
-    function delItem(e:any){
-        console.log(e.target.name)
+    function openDelItemPopup(e:any){
         setIsCompleted((isCompleted)=>{
             return !isCompleted
         })
 
+        setChangeIndex(()=>{
+            return +e.target.name
+        })
     }
 
-    function editItem(e:any){
-        console.log(e.target.name)
+    function prevItem(){
+        setIsCompleted((isCompleted)=>{
+            return !isCompleted
+        })
+    }
 
+    function delItem(){
+        setIsCompleted((isCompleted)=>{
+            return !isCompleted
+        })
+
+        setItems((items)=>{
+            return items.filter((el)=>{
+                return el.index!==changeIndex
+            })
+
+        })
+
+
+        setDataItems((dataItems)=>{
+            return dataItems.filter((el)=>{
+                return el.index!==changeIndex
+            })
+
+        })
+    }
+
+    function openEditItemPopup(e:any){
+        setIsEditable((isEditable)=>{
+            return !isEditable
+        })
+
+        setChangeIndex(()=>{
+            return +e.target.name
+        })
+
+    }
+
+
+    function changeI(){
+        let y= dataItems.find((el)=>{
+            return el.index===changeIndex
+        })
+        // @ts-ignore
+        let x= items[dataItems.indexOf(y)]
+        // @ts-ignore
+        return dataItems[x.index]
+    }
+
+
+    function changeInputName(e:any){
+
+        // @ts-ignore
+        setDataItems((dataItems)=>{
+            return  dataItems.map((el)=>{
+                if(el.index===changeI().index){
+                    console.log(7)
+                    // @ts-ignore
+                    return {name:e.target.value,surname:el.surname,age:el.age,index:el.index}
+                }else return el
+            })
+        })
+        console.log(dataItems)
+
+        return e.target.value
+    }
+
+    function changeInputSurname(e:any){
+        // @ts-ignore
+        setDataItems((dataItems)=> {
+            return dataItems.map((el) => {
+                if (el.index === changeI().index) {
+                    // @ts-ignore
+                    return {name: el.name, surname: e.target.value, age: el.age, index: el.index}
+                } else return el
+            })
+        })
+        return e.target.value
+    }
+
+    function changeInputAge(e:any){
+        // @ts-ignore
+        setDataItems((dataItems)=> {
+            return dataItems.map((el) => {
+                if (el.index === changeI().index) {
+                    // @ts-ignore
+                    return {name: el.name, surname: el.surname, age: e.target.value, index: el.index}
+                } else return el
+            })
+        })
+        return e.target.value
     }
 
     return(
@@ -139,8 +253,16 @@ export default function Container():JSX.Element {
                 isCompleted === true ?
                     <div className={"delContainer"}>
                         <button onClick={delItem} className={"del"}>yes</button>
-                        <button onClick={delItem} className={"del"}>no</button>
-                    </div> :
+                        <button onClick={prevItem} className={"del"}>no</button>
+                    </div> :isEditable===true?
+
+                        <div className={"changeInputContainer"}>
+                            <input className={"changeInput"} onChange={changeInputName} defaultValue={changeI().name }  maxLength={12}/>
+                            <input className={"changeInput"} onChange={changeInputSurname} defaultValue={changeI().surname} maxLength={12}/>
+                            <input className={"changeInput"} onChange={changeInputAge} defaultValue={changeI().age} maxLength={3}/>
+                            <button className={"changeInputButton"} onClick={openEditItemPopup}>edit</button>
+                        </div>:
+
                     <div>
                         <div className={"headerContainer"}>
                             <button className={"all"} onClick={buildAllItems}>all items</button>
@@ -166,16 +288,16 @@ export default function Container():JSX.Element {
                                 items.slice(pageNumber * pagination, pageNumber * (+pagination + 1)).map((el) => {
                                     return (
                                         <BuildItem
+                                            dataItems={dataItems}
                                             item={el}
                                             key={generateUniqueID()}
-                                            id={generateUniqueID()}
                                             text={text}
                                             searchName={searchName}
-                                            delItem={(e: void) => {
-                                                delItem(e)
+                                            openDelItemPopup={(e: void) => {
+                                                openDelItemPopup(e)
                                             }}
-                                            editItem={(e: void) => {
-                                                editItem(e)
+                                            openEditItemPopup={(e: void) => {
+                                                openEditItemPopup(e)
                                             }}/>
                                     )
                                 })
