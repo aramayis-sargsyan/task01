@@ -1,3 +1,4 @@
+import React, {useEffect, useState, useMemo, useCallback} from 'react';
 
 export function data():{
     name: string,
@@ -39,9 +40,7 @@ export function data():{
         {name:"a",surname:"basd",age:"32"},
         {name:"a",surname:"basd",age:"33"},
         {name:"a",surname:"basd",age:"34"},
-
-
-
     ]
 }
+
 

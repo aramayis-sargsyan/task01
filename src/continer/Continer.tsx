@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import BuildInput from "../input/Input";
 import BuildItem from "../items/Item";
 import {data} from "../util/Data";
@@ -6,13 +6,15 @@ import { searchData} from "../util/SearchData";
 import Pagination from "../pagination/Pagination";
 import BuildSelect from "../select/Select";
 import {pageNumber} from "../config/Config";
+// @ts-ignore
+import debounce from 'lodash.debounce';
 import { generateUniqueID } from "web-vitals/dist/modules/lib/generateUniqueID";
 import {FaSearch } from "react-icons/fa"
 import "./Continer.css"
 
 export interface items  {
     index:number,
-    startIndex:number
+    endIndex:number
 }
 
 export interface dataItem  {
@@ -22,11 +24,10 @@ export interface dataItem  {
     index:number
 }
 
-
-
 export default function Container():JSX.Element {
     const [items,setItems] = useState<items[]>([])
     const [text,setText] = useState<string>("")
+    const [searchText,setSearchText] = useState<string>("")
     const [pagination,setPagination] = useState<number>(0)
     const [isEdit,setIsEdit] = useState<boolean>(false)
     const [searchName,setSearchName] = useState<string>("name")
@@ -40,7 +41,7 @@ export default function Container():JSX.Element {
 
         data().forEach((el,index)=>{
                 setItems((items)=>{
-                    return [...items, {index:index,startIndex:-1}]
+                    return [...items, {index:index,endIndex:-1}]
                 })
             })
     }, []);
@@ -51,7 +52,6 @@ export default function Container():JSX.Element {
                     return [...dataItems,{...el,index:index}]
                 })
             })
-        console.log(dataItems)
 
     }, []);
 
@@ -61,7 +61,7 @@ export default function Container():JSX.Element {
         })
         dataItems.forEach((el,)=>{
             setItems((items)=>{
-                return [...items,{index:el.index,startIndex:-1}]
+                return [...items,{index:el.index,endIndex:-1}]
                 })
         })
 
@@ -70,15 +70,29 @@ export default function Container():JSX.Element {
         })
     }
 
-    function changeInput(e:any){
-        setText(()=>{
-            return e.target.value
-        })
+    const debounceHandler = useCallback<() => void>(()=>{
+        console.log(77, searchText)
+      changeInput(searchText);
+    } ,[searchText])
 
-            setItems(() => {
-                return searchData(e.target.value, searchName,dataItems)
+    const debouncedChangeHandler = (event: any) => {
+        const v = event.target.value;
+        setText(event.target.value);
+        setSearchText(v)
+        const a = debounce(() => {
+
+            debounceHandler()
+        }, 2000)
+        a()
+        console.log(7)
+    }
+
+    function changeInput(value: string) {
+        console.log('change input', value);
+        setItems(() => {
+                return searchData(value, searchName, dataItems)
             })
-            setPagination(()=>{
+            setPagination(() => {
                 return 0
             })
     }
@@ -172,7 +186,6 @@ export default function Container():JSX.Element {
 
         })
 
-
         setDataItems((dataItems)=>{
             return dataItems.filter((el)=>{
                 return el.index!==changeIndex
@@ -202,6 +215,7 @@ export default function Container():JSX.Element {
         // @ts-ignore
         return dataItems[x.index]
     }
+
 
 
     function changeInputName(e:any){
@@ -250,11 +264,11 @@ export default function Container():JSX.Element {
     return(
         <div>
             {
-                isCompleted === true ?
+                isCompleted?
                     <div className={"delContainer"}>
                         <button onClick={delItem} className={"del"}>yes</button>
                         <button onClick={prevItem} className={"del"}>no</button>
-                    </div> :isEditable===true?
+                    </div> :isEditable?
 
                         <div className={"changeInputContainer"}>
                             <input className={"changeInput"} onChange={changeInputName} defaultValue={changeI().name }  maxLength={12}/>
@@ -267,13 +281,12 @@ export default function Container():JSX.Element {
                         <div className={"headerContainer"}>
                             <button className={"all"} onClick={buildAllItems}>all items</button>
 
-                            <div className={"inputContainer"}>
+                            <div className={"inputContainer"} >
 
-                                <BuildInput changeInput={(e: void) => {
-                                    changeInput(e)
-                                }} getItemIndexEnter={(e: void) => {
-                                    getItemIndexEnter(e)
-                                }} text={text}/>
+                                <BuildInput changeInput={debouncedChangeHandler}
+                                            getItemIndexEnter={(e: void) => {getItemIndexEnter(e)}}
+                                            text={text}
+                                />
 
                                 <button className={"searchButton"} onClick={getItemIndex}><FaSearch
                                     className={"searchIcon"}/></button>

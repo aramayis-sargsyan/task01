@@ -1,4 +1,3 @@
-import {data} from "./Data";
 
 export interface ChangeProps {
     text: string
@@ -18,22 +17,21 @@ export function searchData(text: string, searchText: string,dataItems:{
     index:number
 }[]):{
     index:number,
-    startIndex:number
+    endIndex:number
 }[] {
     let indexArr: {
         index: number,
-        startIndex: number
+        endIndex: number
     }[] = []
     if (text.length > 2) {
-        console.log(dataItems)
-        dataItems.map((el: dataItem, index) => {
+        dataItems.map((el: dataItem, ) => {
             let count = 0
             // @ts-ignore
             for (let i = 0; i < el[searchText].length; i++) {
                 // @ts-ignore
                 if (el[searchText][i].toLowerCase() === text[count].toLowerCase()) {
                     if (count === text.length - 1) {
-                        indexArr.push({index: el.index, startIndex: i})
+                        indexArr.push({index: el.index, endIndex: i})
                         break
                     }
                     count++
@@ -44,7 +42,6 @@ export function searchData(text: string, searchText: string,dataItems:{
             // @ts-ignore
             return el[searchText][0] === text[0]
         })
-        console.log(indexArr)
         return indexArr
 
     } else {
@@ -52,11 +49,22 @@ export function searchData(text: string, searchText: string,dataItems:{
 for (let i = 0;i<dataItems.length;i++){
 
     if(dataItems[i]!==null){
-        res.push({index:dataItems[i].index, startIndex: 0})
+        res.push({index:dataItems[i].index, endIndex: 0})
     }
 }
-    return res
+        return res
     }
 
 }
-
+//
+// function highlight(text) {
+//     var inputText = document.getElementById("inputText");
+//     var innerHTML = inputText.innerHTML;
+//     var index = innerHTML.indexOf(text);
+//     if (index >= 0) {
+//         innerHTML = innerHTML.substring(0,index) +
+//             "<span class='highlight'>" + innerHTML.substring(index,index+text.length) + "</span>" +
+//             innerHTML.substring(index + text.length);
+//         inputText.innerHTML = innerHTML;
+//     }
+// }

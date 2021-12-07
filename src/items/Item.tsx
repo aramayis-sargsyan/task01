@@ -11,7 +11,7 @@ export interface ItemType {
     }[],
     item: {
         index: number,
-        startIndex: number
+        endIndex: number
     },
     text: string,
     searchName:string
@@ -26,36 +26,30 @@ export const getTextColor = (dataItems:{
                                  index:number
                              }[],item: {
     index: number,
-    startIndex: number
+    endIndex: number
 }, text:  string,
 searchName:string)=>{
     let res:string[] = ["","",""]
     if(text.length>2){
-        for(let i=0;i<item.startIndex-text.length+1;i++){
-            // @ts-ignore
-            res[0]+=dataItems[item.index][searchName][i]
-    }
-        for(let i=item.startIndex-text.length+1;i<(item.startIndex+1);i++){
-            // @ts-ignore
-            res[1]+=dataItems[item.index][searchName][i]
-    }
         // @ts-ignore
-        for(let i=(item.startIndex+1);i<data()[item.index][searchName].length;i++){
-            // @ts-ignore
-            res[2]+=dataItems[item.index][searchName][i]
-    }
-        console.log(res)
+        res[0]=dataItems[item.index][searchName].substring(0,item.endIndex-text.length+1)
+
+        // @ts-ignore
+        res[1]=dataItems[item.index][searchName].substring(item.endIndex-text.length+1,item.endIndex+1)
+
+        // @ts-ignore
+        res[2]=dataItems[item.index][searchName].substring(item.endIndex+1)
+
     return res
 }else
-        // @ts-ignore
-        res[0]=dataItems[item.index][searchName]
-    console.log(res)
+        { // @ts-ignore
+            res[0]=dataItems[item.index][searchName]
+        }
         return res
 }
 
 
 export const BuildItem = ({dataItems,item,text,searchName,openDelItemPopup,openEditItemPopup}:ItemType ):JSX.Element=>{
-    console.log(7)
     return(
         <div className={"itemContainer"}>
 
