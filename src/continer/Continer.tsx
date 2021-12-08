@@ -52,8 +52,8 @@ export default function Container():JSX.Element {
                     return [...dataItems,{...el,index:index}]
                 })
             })
-
     }, []);
+
 
     function buildAllItems(){
         setItems(()=>{
@@ -65,43 +65,38 @@ export default function Container():JSX.Element {
                 })
         })
 
-        setText(()=>{
+        setSearchText(()=>{
             return ""
         })
     }
 
-    const debounceHandler = useCallback<() => void>(()=>{
-        console.log(77, searchText)
-      changeInput(searchText);
-    } ,[searchText])
+const x = useCallback((e)=>{
+    console.log(2,searchText)
+    changeInput(e)
+},[dataItems])
 
-    const debouncedChangeHandler = (event: any) => {
-        const v = event.target.value;
-        setText(event.target.value);
-        setSearchText(v)
-        const a = debounce(() => {
+    const a= debounce((e:any)=>{
+        setSearchText(e.target.value)
 
-            debounceHandler()
-        }, 2000)
-        a()
-        console.log(7)
-    }
+        console.log(1,searchText)
+        x(e.target.value)
+    }, 1000)
 
-    function changeInput(value: string) {
-        console.log('change input', value);
+    function changeInput(e: string) {
+        console.log(3,dataItems)
         setItems(() => {
-                return searchData(value, searchName, dataItems)
-            })
-            setPagination(() => {
-                return 0
-            })
+            return searchData(e, searchName,dataItems)
+        })
+        setPagination(()=>{
+            return 0
+        })
     }
 
-    function getItemIndex() {
-        if (text.length > 2) {
-
+    function getItemIndex(e:any) {
+        console.log(dataItems)
+        if (searchText.length > 2) {
             setItems(() => {
-                return searchData(text, searchName,dataItems)
+                return searchData(searchText, searchName,dataItems)
             })
             setPagination(()=>{
                 return 0
@@ -111,10 +106,9 @@ export default function Container():JSX.Element {
 
 
     function getItemIndexEnter(e:any){
-        if(text.length>2 && e.key==="Enter"){
-            searchData(text,searchName,dataItems)
+        if(searchText.length>2 && e.key==="Enter"){
             setItems(()=>{
-                return searchData(text,searchName,dataItems)
+                return searchData(searchText,searchName,dataItems)
             })
             setPagination(()=>{
                 return 0
@@ -143,7 +137,7 @@ export default function Container():JSX.Element {
             return false
         })
 
-        setText(()=>{
+        setSearchText(()=>{
             return ""
         })
 
@@ -283,12 +277,12 @@ export default function Container():JSX.Element {
 
                             <div className={"inputContainer"} >
 
-                                <BuildInput changeInput={debouncedChangeHandler}
+                                <BuildInput changeInput={(e:any)=>a(e)}
                                             getItemIndexEnter={(e: void) => {getItemIndexEnter(e)}}
                                             text={text}
                                 />
 
-                                <button className={"searchButton"} onClick={getItemIndex}><FaSearch
+                                <button className={"searchButton"} onClick={(e)=>getItemIndex(e)}><FaSearch
                                     className={"searchIcon"}/></button>
 
                                 <BuildSelect isEdit={isEdit} changeSearchName={(e: void) => changeSearchName(e)}
@@ -304,7 +298,7 @@ export default function Container():JSX.Element {
                                             dataItems={dataItems}
                                             item={el}
                                             key={generateUniqueID()}
-                                            text={text}
+                                            text={searchText}
                                             searchName={searchName}
                                             openDelItemPopup={(e: void) => {
                                                 openDelItemPopup(e)

@@ -24,6 +24,7 @@ export function searchData(text: string, searchText: string,dataItems:{
         endIndex: number
     }[] = []
     if (text.length > 2) {
+
         dataItems.map((el: dataItem, ) => {
             let count = 0
             // @ts-ignore
@@ -56,15 +57,3 @@ for (let i = 0;i<dataItems.length;i++){
     }
 
 }
-//
-// function highlight(text) {
-//     var inputText = document.getElementById("inputText");
-//     var innerHTML = inputText.innerHTML;
-//     var index = innerHTML.indexOf(text);
-//     if (index >= 0) {
-//         innerHTML = innerHTML.substring(0,index) +
-//             "<span class='highlight'>" + innerHTML.substring(index,index+text.length) + "</span>" +
-//             innerHTML.substring(index + text.length);
-//         inputText.innerHTML = innerHTML;
-//     }
-// }
